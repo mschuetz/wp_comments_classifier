@@ -1,0 +1,1 @@
+require 'wp_comments_classifier/database_classifier'
