@@ -1,8 +1,4 @@
-require 'wp_comments_classifier'
-require 'minitest/spec'
-require 'minitest/autorun'
-require 'rdbi'
-require 'rdbi-driver-sqlite3'
+require 'test_helper'
 
 describe WordpressUtils::CommentsClassifier do
   before do
@@ -37,7 +33,9 @@ describe WordpressUtils::CommentsClassifier do
   describe "when asked about 'secret links'" do
     it "should say it's spam" do
       @dbh.execute('insert into wp_comments (comment_ID, comment_content, comment_approved) values (30, \'i have a secret link for you\', 0)')
-      @classifier.classify_unapproved
+      @classifier.classify_unapproved {|content, approval_status|
+        approval_status.must_equal WordpressUtils::ApprovalStatus::SPAM
+      }
       approval_status_of(30).must_equal WordpressUtils::ApprovalStatus::SPAM
     end
   end
@@ -45,7 +43,9 @@ describe WordpressUtils::CommentsClassifier do
   describe "when asked about 'would you like to go to the sports event today'" do
     it "should say it's ham" do
       @dbh.execute('insert into wp_comments (comment_ID, comment_content, comment_approved) values (31, \'would you like to go to a sports event today\', 0)')
-      @classifier.classify_unapproved
+      @classifier.classify_unapproved {|content, approval_status|
+        approval_status.must_equal WordpressUtils::ApprovalStatus::HAM
+      }
       approval_status_of(31).must_equal WordpressUtils::ApprovalStatus::HAM
     end
   end

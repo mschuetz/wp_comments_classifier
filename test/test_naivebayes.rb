@@ -1,6 +1,4 @@
-require 'wp_comments_classifier/naivebayes'
-require 'minitest/spec'
-require 'minitest/autorun'
+require 'test_helper'
 
 describe NaiveBayes do
   before do

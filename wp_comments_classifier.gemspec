@@ -12,4 +12,5 @@ Gem::Specification.new do |s|
   s.executables << 'classify_wp_comments'
   s.add_runtime_dependency('rdbi', [">= 0.9.1"])
   s.add_runtime_dependency('json', [">= 1.7.0"])
+  s.add_development_dependency('simplecov', [">= 0.6.2"])
 end
