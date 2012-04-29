@@ -1,5 +1,6 @@
 wp_comments_classifier
 ======================
+[![Build Status](https://secure.travis-ci.org/mschuetz/wp_comments_classifier.png?branch=master)](http://travis-ci.org/mschuetz/wp_comments_classifier)
 
 I wrote this utility because I was unable to find a working spam filter for wordpress.
 It uses rdbi to connect to a variety of databases which also means that you need to install the approprivate database driver manually as I haven't specified them as package dependencies.
