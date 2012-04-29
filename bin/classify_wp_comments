@@ -1,0 +1,22 @@
+#!/usr/bin/env ruby
+require 'json'
+conf = open(ARGV[0]){|f| JSON.load(f)}
+require 'wp_comments_classifier/database_classifier'
+require 'rdbi'
+driver = conf['rdbi_driver']
+if driver=~/mysql/i
+  require 'rdbi-driver-mysql'
+elsif driver=~/postgres/i
+  require 'rdbi-driver-postgresql'
+elseif 
+  require 'rdbi-driver-sqlite'
+else
+  fail "unknown database type #{driver}"
+end
+dbh = RDBI.connect(driver, conf)
+classifier = WordpressUtils::CommentsClassifier.new(dbh)
+classifier.debug = true if conf['classifier_debug'] == true
+classifier.learn
+classifier.classify_unapproved do |content, classification|
+	STDERR.puts "classified '#{content[0..40]}...' as #{classification == WordpressUtils::ApprovalStatus::SPAM ? 'spam' : 'ham'}"
+end
