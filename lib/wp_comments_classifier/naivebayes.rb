@@ -53,7 +53,6 @@ module NaiveBayes
         #                           count(x) + k                /        N             +      k          *   |x| 
         @priors[klass] = (messages.size.to_f + @laplace_factor) / (total_messages.to_f + @laplace_factor * training.keys.size)
       }
-      puts @global_dict.size
       # store classes
       @classes = training.keys
     end
