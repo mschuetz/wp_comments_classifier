@@ -33,7 +33,9 @@ module WordpressUtils
         content(ApprovalStatus::NONE) do |id, content|
           next if content.nil?
           classification = NaiveBayes::Util.highest_ranking(@classifier.classify(content))
-            STDERR.puts "classified '#{content[0..30]}...' as #{classification == ApprovalStatus::SPAM ? 'spam' : 'ham'}" if debug
+            if block_given?
+              yield content, classification
+            end
             stmt.execute(classification, id)
         end
       end
