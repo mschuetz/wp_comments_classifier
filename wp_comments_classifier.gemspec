@@ -18,6 +18,9 @@ Gem::Specification.new do |s|
     "README.md"
   ]
   s.files = [
+    "Gemfile",
+    "Gemfile.lock",
+    "LICENSE.txt",
     "README.md",
     "Rakefile",
     "bin/classify_wp_comments",
