@@ -16,20 +16,16 @@ describe NaiveBayes do
       NaiveBayes::Util.highest_ranking(classifications).must_equal :spam
     end
   end
-
-  describe "when asked about 'would you like to go to the sports event today'" do
-    it "should say it's ham" do
-      classifications = @classifier.classify('would you like to go to the sports event today')
-      classifications.must_be_kind_of Hash
-      NaiveBayes::Util.highest_ranking(classifications).must_equal :ham
-    end
-  end
   
-=begin
-  describe "when asked about nil" do
-    it "should raise an ArgumentError" do
-      classifications = @classifier.classify(nil)
+begin
+  describe "when asked about classifications whose probabilities are all within epsilon" do
+    it "should return unclassified" do
+      klass = NaiveBayes::Util.highest_ranking({spam: 0.51, ham: 0.49}, 0.05)
+      klass.must_equal NaiveBayes::Util::Unclassified
+
+      klass = NaiveBayes::Util.highest_ranking({spam: 0.0, ham: 0.0})
+      klass.must_equal NaiveBayes::Util::Unclassified
     end
   end
-=end
+end
 end

@@ -32,11 +32,12 @@ module WordpressUtils
       @dbh.prepare('update wp_comments set comment_approved=? where comment_ID=?') do |stmt|
         content(ApprovalStatus::NONE) do |id, content|
           next if content.nil?
-          classification = NaiveBayes::Util.highest_ranking(@classifier.classify(content))
-            if block_given?
-              yield content, classification
-            end
-            stmt.execute(classification, id)
+          classes = @classifier.classify(content)
+          STDERR.puts "classifications=#{classes}" if debug
+          classification = NaiveBayes::Util.highest_ranking(classes)
+          yield id, content, classification if block_given?
+          STDERR.puts "id=#{id} classification=#{classification} content=#{content}" if debug
+          stmt.execute(classification, id) if classification != NaiveBayes::Util::Unclassified
         end
       end
     end

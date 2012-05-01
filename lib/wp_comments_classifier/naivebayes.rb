@@ -1,4 +1,5 @@
 module NaiveBayes
+  
   module Util
     # sums up all elements of arr. i.e. returns arr[0] + arr[1] .. + arr[n]
     def sum(arr)
@@ -14,11 +15,23 @@ module NaiveBayes
       res
     end
 
-    def self.highest_ranking(classifications)
+    def self.highest_ranking(classifications, epsilon=0.000001)
       max_class = nil
       max_prob = 0.0
-      classifications.each_pair{|c, v| max_class, max_prob = c, v if v>=max_prob}
-      max_class
+      classifications.each_pair{|klass, prob| max_class, max_prob = klass, prob if prob >= max_prob }
+      unclassified = true
+      classifications.each_value do |prob|
+        if max_prob - prob > epsilon
+          unclassified = false
+          break
+        end
+      end
+      unclassified ? Unclassified : max_class
+    end
+
+    class Unclassified
+    private
+      def initialize(); end  
     end
   end
 
@@ -74,6 +87,9 @@ module NaiveBayes
         # P(word_1|kk_1)*P(word_2|kk_1)*...*P(word_n|kk_1) * P(kk_1) + ... + P(word_1|kk_n)*P(word_2|kk_n)*...*P(word_n|kk_n) * P(kk_n) 
         denominator = sum(@classes.map{|kk| multiply(words.map{|w| prob(w, kk)}) * @priors[kk] })
         res[klass] = numerator/denominator
+        # return 0.0 if the result was NaN. this can happen if we have a long message with words that were not in the dictionary
+        # i.e. we were multiplying lots of very small probabilities here..
+        res[klass] = res[klass].nan? ? 0.0 : res[klass] 
       }
       res
     end

@@ -17,6 +17,19 @@ dbh = RDBI.connect(driver, conf)
 classifier = WordpressUtils::CommentsClassifier.new(dbh)
 classifier.debug = true if conf['classifier_debug'] == true
 classifier.learn
-classifier.classify_unapproved do |content, classification|
-	STDERR.puts "classified '#{content[0..40]}...' as #{classification == WordpressUtils::ApprovalStatus::SPAM ? 'spam' : 'ham'}"
+
+def class_to_s(klass)
+	if klass == WordpressUtils::ApprovalStatus::SPAM
+		'spam'
+	elsif klass == WordpressUtils::ApprovalStatus::HAM
+		'ham'
+	elsif klass = NaiveBayes::Util::Unclassified
+		'unclassified'
+	else
+		'unknown(#{classification})'
+	end
+end
+
+classifier.classify_unapproved do |id, content, classification|
+	STDERR.puts "classified #{id} '#{content[0..40]}...' as #{class_to_s(classification)}"
 end
